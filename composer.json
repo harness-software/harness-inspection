@@ -1,0 +1,16 @@
+{
+  "name": "harness/harness",
+  "description": "Harness Inspection plugin",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Harness"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Harness\\": "src/"
+    }
+  }
+}
