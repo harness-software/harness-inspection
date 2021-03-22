@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require(plugin_dir_path( __FILE__ ) . 'src/HarnessInspection.php');
+$HarnessInspection = new HarnessInspection();
 
 /**
  * Define constants
@@ -31,13 +32,13 @@ add_action( 'plugins_loaded', function() {
 }, 0);
 
 function init(){
-  $HarnessInspection = new HarnessInspection();
+  global $HarnessInspection;
   $HarnessInspection->register_custom_post_type();
 }
 
 function initACF(){
-  $HarnessInspection = new HarnessInspection();
-  $HarnessInspection->register_acf_field_group();
+  global $HarnessInspection;
+  $HarnessInspection->acfInit();
 }
 
 function can_load_plugin() {
