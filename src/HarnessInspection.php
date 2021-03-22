@@ -64,7 +64,7 @@ class HarnessInspection {
     ]);
   
     $this->build_radio_fields($this->harnessComponents);
-	}
+  }
 
   public function build_radio_fields($array){
     foreach($array as $key=>$value) {
