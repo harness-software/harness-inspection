@@ -43,13 +43,18 @@ function initACF(){
 }
 
 function update_post_title($data, $postarr){
-	$value = get_field( "serial_number" );
-	$data['post_title'] = $value ? current_time ( 'm-d-Y' ) . '-' . $value : current_time ( 'm-d-Y' ) ;
+	if($data['post_type'] === 'inspection'){
+		$value = get_field( "serial_number" );
+		$data['post_title'] = $value ? current_time ( 'm-d-Y' ) . '-' . $value : current_time ( 'm-d-Y' ) ;
 
-	//also update the slug of the post for the URL
-	$data['post_name'] = wp_unique_post_slug( sanitize_title( $data['post_title'] ),      $postarr['ID'], $data['post_status'], $data['post_type'], $data['post_parent'] );
+		//also update the slug of the post for the URL
+		$data['post_name'] = wp_unique_post_slug( sanitize_title( $data['post_title'] ),      $postarr['ID'], $data['post_status'], $data['post_type'], $data['post_parent'] );
 
-	return $data;  
+		return $data;  
+	}else{
+		//we still need to return the data for other post types unchanged;
+		return $data;
+	}
 }
 
 function can_load_plugin() {
