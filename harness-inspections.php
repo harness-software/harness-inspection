@@ -28,7 +28,7 @@ add_action( 'plugins_loaded', function() {
 	}else{
     add_action('init', 'init');
     add_action( 'acf/init', 'initACF');
-		add_filter('wp_insert_post_data', 'updatePostTitle', 99, 2);
+		add_filter('wp_insert_post_data', 'update_post_title', 99, 2);
   }
 }, 0);
 
@@ -42,13 +42,9 @@ function initACF(){
   $HarnessInspection->acfInit();
 }
 
-function updatePostTitle($data, $postarr){
-	//update post time on status change
-	$data['post_date'] = $data['post_modified'];
-	$data['post_date_gmt'] = $data['post_modified_gmt'];
-
-	//also update title and add the current date to title
-	$data['post_title'] = current_time ( 'm-d-Y' );
+function update_post_title($data, $postarr){
+	$value = get_field( "serial_number" );
+	$data['post_title'] = $value ? current_time ( 'm-d-Y' ) . '-' . $value : current_time ( 'm-d-Y' ) ;
 
 	//also update the slug of the post for the URL
 	$data['post_name'] = wp_unique_post_slug( sanitize_title( $data['post_title'] ),      $postarr['ID'], $data['post_status'], $data['post_type'], $data['post_parent'] );
