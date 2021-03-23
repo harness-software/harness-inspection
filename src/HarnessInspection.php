@@ -102,7 +102,7 @@ class HarnessInspection {
 
       $field = [
         [
-          'key' => 'field_'  . $key,
+          'key' => 'field_group_'  . $key,
           'label' => $value,
           'name' => $name,  
           'type' => 'group',
@@ -147,6 +147,23 @@ class HarnessInspection {
               'layout' => 'vertical',
               'return_format' => 'value',
               'save_other_choice' => 0,
+            ],
+            [
+              'key' => 'field_id_' . $key,
+					    'label' => 'Harness Point ID',
+					    'name' => 'harness_point_id',
+					    'type' => 'number',
+              'default_value' => $key,
+					    'instructions' => '',
+					    'required' => 0,
+					    'conditional_logic' => 0,
+					    'show_in_graphql' => 1,
+					    'placeholder' => '',
+					    'prepend' => '',
+					    'append' => '',
+					    'min' => '',
+					    'max' => '',
+					    'step' => '',
             ]
           ]
         ]
@@ -179,6 +196,7 @@ class HarnessInspection {
       'show_in_graphql' => 1,
       'graphql_field_name' => 'harnessComponents',
     ));
+  
   }
 
   private function register_inspection_details_acf_field_group(){
@@ -212,7 +230,7 @@ class HarnessInspection {
       $name = str_replace(' ', '_', strtolower($value));
       
       $temp = [
-        'key' => 'field_' . $key,
+        'key' => 'field_text_' . $key,
         'label' => $value,
         'name' =>  $name,
         'parent' => 'group_inspection_details',
@@ -232,7 +250,7 @@ class HarnessInspection {
       $name = str_replace(' ', '_', strtolower($value));
       
       $temp = [
-        'key' => 'field_' . $key,
+        'key' => 'field_date_' . $key,
         'label' => $value,
         'name' =>  $name,
         'parent' => 'group_inspection_details',
@@ -253,9 +271,9 @@ class HarnessInspection {
     $key = 49;
 
     $field = [
-      'key' => 'field_' . $key,
+      'key' => 'field_pass_fail',
       'label' => 'Pass or Fail',
-      'name' =>  'pass_fail_' . $key,
+      'name' =>  'pass_fail',
       'parent' => 'group_inspection_details',
       'type' => 'radio',
       'choices' => [

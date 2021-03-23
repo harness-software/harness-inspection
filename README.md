@@ -34,11 +34,29 @@ Plugin to register an Inspection Custom Post Type and associate it with some ACF
     nodes {
       title
       id
-      fields {
-        deePad
-        deeRing
-        stitching
-        tongueBuckle
+      harnessComponents {
+        deeRing1 {
+          condition
+          description
+          harnessPointId
+        }
+        backStrap31 {
+          condition
+          description
+          harnessPointId
+        }
+        springLoadedFrictionBuckles4 {
+          condition
+          description
+          harnessPointId
+        }
+      }
+      harnessInspectionDetails {
+        inspector
+        serialNumber
+        dateOfInspection
+        dateOfManufacture
+        passFail
       }
     }
   }
@@ -53,13 +71,31 @@ and the results of the query would be:
     "inspections": {
       "nodes": [
         {
-          "title": "Test",
-          "id": "cG9zdDo3",
-          "fields": {
-            "deePad": "yes",
-            "deeRing": "not_applicable",
-            "stitching": "no",
-            "tongueBuckle": "not_applicable"
+          "title": "Monthly Inspection",
+          "id": "cG9zdDo1MQ==",
+          "harnessComponents": {
+            "deeRing1": {
+              "condition": "pass",
+              "description": "Does the Dee Ring look intact?",
+              "harnessPointId": 1
+            },
+            "backStrap31": {
+              "condition": "pass",
+              "description": null,
+              "harnessPointId": 31
+            },
+            "springLoadedFrictionBuckles4": {
+              "condition": "pass",
+              "description": null,
+              "harnessPointId": 4
+            }
+          },
+          "harnessInspectionDetails": {
+            "inspector": "Tester",
+            "serialNumber": "Test",
+            "dateOfInspection": "28/03/2021",
+            "dateOfManufacture": "24/03/2021",
+            "passFail": "pass"
           }
         }
       ]
