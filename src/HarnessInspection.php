@@ -3,9 +3,6 @@
  * Main plugin class.
  */
 class HarnessInspection {
-	/**
-	 * Class instances.
-	 */
 
   private $harnessComponents = [
     '1' => 'Dee Ring',
@@ -85,73 +82,103 @@ class HarnessInspection {
 	}
 
   public function acfInit(){
-    $this->register_harness_component_acf_field_group();
-    $this->build_radio_fields($this->harnessComponents);
+    $this->register_harness_component_acf_field_group($this->harnessComponents);
     $this->register_inspection_details_acf_field_group();
     $this->build_text_fields($this->textFields);
     $this->build_date_fields($this->dateFields);
     $this->build_pass_fail_field();
   }
 
-  private function register_harness_component_acf_field_group() {
+  private function register_harness_component_acf_field_group($array) {
     if( !function_exists('acf_add_local_field_group') || !function_exists('acf_add_local_field')){
       return;
     }
 
-      acf_add_local_field_group([
+    $fields = [];
+
+    foreach($array as $key=>$value) {
+      //if this ACF field is a duplicate we need to append id/key
+      $name = str_replace(' ', '_', strtolower($value)) . '_' . $key;
+
+      $field = [
+        [
+          'key' => 'field_'  . $key,
+          'label' => $value,
+          'name' => $name,  
+          'type' => 'group',
+          'instructions' => '',
+          'required' => 0,
+          'conditional_logic' => 0,
+          'show_in_graphql' => 1,
+          'layout' => 'block',
+          'sub_fields' => [
+            [
+              'key' => 'field_description_' . $key,
+              'label' => 'Description',
+              'name' => 'description',
+              'type' => 'text',
+              'instructions' => 'Enter component description.',
+              'required' => 0,
+              'conditional_logic' => 0,
+              'show_in_graphql' => 1,
+              'default_value' => '',
+              'placeholder' => '',
+              'prepend' => '',
+              'append' => '',
+              'maxlength' => '',
+            ],
+            [ 
+              'key' => 'field_condition_' . $key,
+              'label' => 'Condition',
+              'name' => 'condition',
+              'type' => 'radio',
+              'instructions' => '',
+              'required' => 0,
+              'conditional_logic' => 0,
+              'show_in_graphql' => 1,
+              'choices' => array(
+                'pass' => 'Pass',
+                'fail' => 'Fail',
+                'not_applicable' => 'Not Applicable'
+              ),
+              'allow_null' => 0,
+              'other_choice' => 0,
+              'default_value' => '',
+              'layout' => 'vertical',
+              'return_format' => 'value',
+              'save_other_choice' => 0,
+            ]
+          ]
+        ]
+      ];
+
+      array_push($fields, $field);
+    }
+   
+    acf_add_local_field_group(array(
       'key' => 'group_harness_components',
       'title' => __('Harness Components', 'txtdomain'),
-      'label_placement' => 'top',
-      'menu_order' => 0,
-      'style' => 'default',
-      'position' => 'normal',
-      'show_in_graphql'       => 1,
-      'graphql_field_name'    => 'harnessComponents',
-      'location' => array (
-        array (
-          array (
+      'fields' => array_reduce($fields, 'array_merge', array()),
+      'location' => array(
+        array(
+          array(
             'param' => 'post_type',
             'operator' => '==',
             'value' => 'inspection',
           ),
         ),
       ),
-    ]);
-  }
-
-  private function build_radio_fields($array){
-  
-    foreach($array as $key=>$value) {
-      //if this ACF field is a duplicate we need to append id/key
-      $name = str_replace(' ', '_', strtolower($value)) . '_' . $key;
-
-      $temp = [
-        'key' => 'field_' . $key,
-        'label' => $value,
-        'name' =>  $name,
-        'parent' => 'group_harness_components',
-        'type' => 'radio',
-        'choices' => [
-          'yes' => __('Yes', 'txtdomain'),
-          'no' => __('No', 'txtdomain'),
-          'not_applicable' => __('Not Applicable', 'txtdomain'),
-        ],
-        'prefix' => '',
-        'instructions' => 'Pass Fail Criteria for this harness component',
-        'required' => 0,
-        'conditional_logic' => 0,
-        'default_value' => '',
-        'placeholder' => '',
-        'prepend' => '',
-        'append' => '',
-        'maxlength' => '',
-        'readonly' => 0,
-        'disabled' => 0,
-        'show_in_graphql'   => 1,
-      ];
-  
-      acf_add_local_field($temp);
-    }
+      'menu_order' => 0,
+      'position' => 'normal',
+      'style' => 'default',
+      'label_placement' => 'top',
+      'instruction_placement' => 'label',
+      'hide_on_screen' => '',
+      'active' => true,
+      'description' => '',
+      'show_in_graphql' => 1,
+      'graphql_field_name' => 'harnessComponents',
+    ));
   }
 
   private function register_inspection_details_acf_field_group(){
