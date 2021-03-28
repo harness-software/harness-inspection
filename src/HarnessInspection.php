@@ -4,71 +4,56 @@
  */
 class HarnessInspection {
 
-  private $harnessComponents = [
-    '1' => 'Dee Ring',
-    '2' => 'Dee Pad',
-    '3' => 'Nylon Webbing',
-    '4' => 'Spring Loaded Friction Buckles',
-    '5' => 'Elastic Keepers(2)',
-    '6' => 'Nylon Webbing',
-    '7' => 'Spring Loaded Friction Buckles',
-    '8' => 'Elastic Keepers(2)',
-    '9' => 'Nylon Webbing',
-    '10' => 'Stitching',
-    '11' => 'Stitching',
-    '12' => 'Tongue Buckle',
-    '13' => 'Elastic Keeper(1)',
-    '14' => 'Nylon Webbing',
-    '15' => 'Stitching',
-    '16' => 'Stitching',
-    '17' => 'Tongue Buckle',
-    '18' => 'Elastic Keeper(1)',
-    '19' => 'Stitching',
-    '20' => 'Nylon Webbing',
-    '21' => 'Stitching',
-    '22' => 'Stitching',
-    '23' => 'Nylon Webbing',
-    '24' => 'Grommets',
-    '25' => 'Stitching',
-    '26' => 'Nylon Webbing',
-    '27' => 'Stitching',
-    '28' => 'Stitching',
-    '29' => 'Nylon Webbing',
-    '30' => 'Grommets',
-    '31' => 'Sub-Pelvic Strap',
-    '31' => 'Back Strap',
-    '33' => 'Stitching - Back Strap',
-    '34' => 'Stitching - Back Strap',
-    '35' => 'Chest Strap Pad',
-    '36' => 'Nylon Webbing',
-    '37' => 'Stitching',
-    '38' => 'Mating Link',
-    '39' => 'Chest Strap Pad',
-    '40' => 'Nylon Webbing',
-    '41' => 'Stitching',
-    '42' => '3 Bar Mating Buckle',
-    '43' => 'Elastic Keeper(1)',
-    '44' => 'Tagging/Label System'
+  //this will eventually reflect total # of fields but leaving at 9 for testing
+  const TOTAL_FIELDS = 9;
+
+  private $inspectionDetailFields = [
+    '0' => 'Serial Number',
+    '1' => 'Inspector',
+    '2' => 'Author Email',
+    '3' => 'Author ID',
+    '4' => 'Date of Manufacture',
+    '5' => 'Date of Inspection',
+    '6' => 'Fail Point',
+    '7' => 'Number of Points before Failure'
   ];
 
-  private $textFields = [
-    '45' => 'Serial Number',
-    '46' => 'Inspector'
+  private $inspectionPointFields = [
+    '8' => 'Location Id',
+    '9' => 'Description'
   ];
-
-  private $dateFields = [
-    '47' => 'Date of Manufacture',
-    '48' => 'Date of Inspection'
-  ];
-
-  public function register_custom_post_type() {
   
+  public function clean_name($string, $int){
+    $search = array("(", ")", " ", "-", "/");
+    $replace = array("_", "", "_", "", "_");
+    return str_replace($search, $replace, strtolower($string)) . '_' . $int;
+  }
+
+  public function register_custom_post_types() {
+
+    register_post_type('inspection-points',
+      array(
+          'labels'      => array(
+              'name'          => __('inspection points', 'textdomain'),
+              'singular_name' => __('inspection points', 'textdomain'),
+          ),
+          'public'      => true,
+          'has_archive' => true,
+          'menu_icon'   => 'dashicons-list-view',
+          'show_in_graphql' => true,
+          'graphql_single_name' => 'inspectionPoint',
+          'graphql_plural_name' => 'inspectionPoints',
+          'hierarchical' => true,
+          'publicly_queryable'  => true,
+        )
+      );
+
     register_post_type('inspection',
       array(
           'labels'      => array(
               'name'          => __('inspection', 'textdomain'),
               'singular_name' => __('inspection', 'textdomain'),
-          ),
+          ),        
           'public'      => true,
           'has_archive' => true,
           'menu_icon'   => 'dashicons-welcome-write-blog',
@@ -82,121 +67,15 @@ class HarnessInspection {
 	}
 
   public function acfInit(){
-    $this->register_harness_component_acf_field_group($this->harnessComponents);
     $this->register_inspection_details_acf_field_group();
-    $this->build_text_fields($this->textFields);
-    $this->build_date_fields($this->dateFields);
+    $this->register_inspection_points_acf_field_group();
+    $this->build_inspection_detail_fields($this->inspectionDetailFields);
+    $this->build_inspection_point_fields($this->inspectionPointFields);
     $this->build_pass_fail_field();
   }
 
-  private function register_harness_component_acf_field_group($array) {
-    if( !function_exists('acf_add_local_field_group') || !function_exists('acf_add_local_field')){
-      return;
-    }
-
-    $fields = [];
-
-    foreach($array as $key=>$value) {
-      //if this ACF field is a duplicate we need to append id/key
-      $name = str_replace(' ', '_', strtolower($value)) . '_' . $key;
-
-      $field = [
-        [
-          'key' => 'field_group_'  . $key,
-          'label' => $value,
-          'name' => $name,  
-          'type' => 'group',
-          'instructions' => '',
-          'required' => 0,
-          'conditional_logic' => 0,
-          'show_in_graphql' => 1,
-          'layout' => 'block',
-          'sub_fields' => [
-            [
-              'key' => 'field_description_' . $key,
-              'label' => 'Description',
-              'name' => 'description',
-              'type' => 'text',
-              'instructions' => 'Enter component description.',
-              'required' => 0,
-              'conditional_logic' => 0,
-              'show_in_graphql' => 1,
-              'default_value' => '',
-              'placeholder' => '',
-              'prepend' => '',
-              'append' => '',
-              'maxlength' => '',
-            ],
-            [ 
-              'key' => 'field_condition_' . $key,
-              'label' => 'Condition',
-              'name' => 'condition',
-              'type' => 'radio',
-              'instructions' => '',
-              'required' => 0,
-              'conditional_logic' => 0,
-              'show_in_graphql' => 1,
-              'choices' => array(
-                'pass' => 'Pass',
-                'fail' => 'Fail',
-                'not_applicable' => 'Not Applicable'
-              ),
-              'allow_null' => 0,
-              'other_choice' => 0,
-              'default_value' => '',
-              'layout' => 'vertical',
-              'return_format' => 'value',
-              'save_other_choice' => 0,
-            ],
-            [
-              'key' => 'field_id_' . $key,
-					    'label' => 'Harness Point ID',
-					    'name' => 'harness_point_id',
-					    'type' => 'number',
-              'default_value' => $key,
-					    'instructions' => '',
-					    'required' => 0,
-					    'conditional_logic' => 0,
-					    'show_in_graphql' => 1,
-					    'placeholder' => '',
-					    'prepend' => '',
-					    'append' => '',
-					    'min' => '',
-					    'max' => '',
-					    'step' => '',
-            ]
-          ]
-        ]
-      ];
-
-      array_push($fields, $field);
-    }
-   
-    acf_add_local_field_group(array(
-      'key' => 'group_harness_components',
-      'title' => __('Harness Components', 'txtdomain'),
-      'fields' => array_reduce($fields, 'array_merge', array()),
-      'location' => array(
-        array(
-          array(
-            'param' => 'post_type',
-            'operator' => '==',
-            'value' => 'inspection',
-          ),
-        ),
-      ),
-      'menu_order' => 0,
-      'position' => 'normal',
-      'style' => 'default',
-      'label_placement' => 'top',
-      'instruction_placement' => 'label',
-      'hide_on_screen' => '',
-      'active' => true,
-      'description' => '',
-      'show_in_graphql' => 1,
-      'graphql_field_name' => 'harnessComponents',
-    ));
-  
+  public function init_graphql_register(){
+    $this->register_graphql_type_and_mutation();
   }
 
   private function register_inspection_details_acf_field_group(){
@@ -225,16 +104,49 @@ class HarnessInspection {
     ]);
   }
 
-  private function build_text_fields($array){
+  private function register_inspection_points_acf_field_group(){
+    if( !function_exists('acf_add_local_field_group') || !function_exists('acf_add_local_field')){
+      return;
+    }
+
+      acf_add_local_field_group([
+      'key' => 'group_inspection_points',
+      'title' => __('Harness Inspection Points', 'txtdomain'),
+      'label_placement' => 'top',
+      'menu_order' => 0,
+      'style' => 'default',
+      'position' => 'normal',
+      'show_in_graphql'       => 1,
+      'graphql_field_name'    => 'harnessInspectionPoint',
+      'location' => array (
+        array (
+          array (
+            'param' => 'post_type',
+            'operator' => '==',
+            'value' => 'inspection-points',
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  private function build_inspection_detail_fields($array){
     foreach($array as $key=>$value) {
       $name = str_replace(' ', '_', strtolower($value));
+
+      $numbersArray = [
+        'Number of Points before Failure',
+        'Author ID',
+      ];
+
+      $type = in_array($value, $numbersArray) ? 'number' : 'text';
       
       $temp = [
         'key' => 'field_text_' . $key,
         'label' => $value,
         'name' =>  $name,
         'parent' => 'group_inspection_details',
-        'type' => 'text',
+        'type' => $type,
         'prefix' => '',
         'instructions' => '',
         'show_in_graphql'   => 1,
@@ -244,19 +156,18 @@ class HarnessInspection {
     }
   }
 
-  private function build_date_fields($array){
-
+  private function build_inspection_point_fields($array){
     foreach($array as $key=>$value) {
       $name = str_replace(' ', '_', strtolower($value));
+
+      $type = $value === 'Location Id' ? 'number' : 'text';
       
       $temp = [
-        'key' => 'field_date_' . $key,
+        'key' => 'field_text_' . $key,
         'label' => $value,
         'name' =>  $name,
-        'parent' => 'group_inspection_details',
-        'type' => 'date_picker',
-        'display_format' => 'd/m/Y',
-			  'return_format' => 'd/m/Y',
+        'parent' => 'group_inspection_points',
+        'type' => $type,
         'prefix' => '',
         'instructions' => '',
         'show_in_graphql'   => 1,
@@ -267,9 +178,7 @@ class HarnessInspection {
   }
 
   private function build_pass_fail_field(){
-    //hardcoded key since this is the last field
-    $key = 49;
-
+    
     $field = [
       'key' => 'field_pass_fail',
       'label' => 'Pass or Fail',
@@ -295,5 +204,122 @@ class HarnessInspection {
     ];
 
     acf_add_local_field($field);
+  }
+
+  private function register_graphql_type_and_mutation(){
+  //not sure we need 'harness_point_id' or 'description'
+  register_graphql_input_type( 'HarnessInspectionType',  [
+    'fields'      => [
+      'condition' => ['type' => 'Boolean', 'description' => 'condition of component'],
+    ]
+  ]);
+
+  register_graphql_mutation( 'makeInspection', [
+    'inputFields' => [
+      'serial_number' => [
+        'type' => 'String'
+      ],
+      'date_of_manufacture' => [
+        'type' => 'String'
+      ],
+      'author_id' => [
+        'type' => 'Number'
+      ],
+      'author_email' => [
+        'type' => 'String'
+      ],
+      'date_of_inspection' => [
+        'type' => 'String'
+      ],
+      'inspector' => [
+        'type' => 'String'
+      ],
+      'pass_fail' => [
+        'type' => 'Boolean'
+      ],
+      'title' => [
+        'type' => 'String'
+      ],
+      'fail_point' => [
+        'type' => 'String'
+      ],
+      'number_of_points_before_failure' => [
+        'type' => 'Number'
+      ],
+      'content' => [
+        'type' => 'String'
+      ],
+    ],
+    'outputFields' => [
+      'success' => [
+        'type' => 'Boolean',
+      ],
+      'error' => [
+        'type' => 'String'
+      ]
+    ],
+    'mutateAndGetPayload' => function($input, $context, $info) {
+      //UNCOMMENT AND USE BELOW TO DUMP $input TO A FILE FOR DEBUGGING
+
+      //$fp = fopen(plugin_dir_path( __FILE__ ) . 'results.json', 'w');
+      //fwrite($fp, json_encode($input));
+      //fclose($fp);
+
+      try{
+        //since we are decoupled between ACF and WP Post, need to run validation up here before
+        /*
+        if(count($input) < self::TOTAL_FIELDS ){
+          throw new Exception('insufficient fields');
+        }
+
+        foreach($input as $key => $value){
+          
+          if($key === 'title' && empty(trim($value))){
+            throw new Exception('must have title');
+          }
+
+          if($key === 'author_email' && !filter_var($value, FILTER_VALIDATE_EMAIL)){
+            throw new Exception('must have valid email');
+          }
+
+          if($key === 'author_id' && !is_numeric($value)){
+            throw new Exception('must have valid author id');
+          }
+
+          if(gettype($value) === 'string' && empty(trim($value))){
+            throw new Exception('cannot be empty');
+          }
+        }
+        */
+
+        $inspect_post = array(
+          'post_title'    => $input['title'],
+          'post_status'   => 'publish',
+          'post_type' => 'inspection',
+          'post_author'   => $input['author_id'],
+        );
+        
+        $post_id = wp_insert_post( $inspect_post, $wp_error );
+        foreach($input as $key => $value){
+          
+          if($key === "pass_fail"){
+            $updateValue = $value ? 'pass' :  'fail';
+          }else{
+            $updateValue = $value;
+          }
+
+          update_field($key, $updateValue, $post_id);
+        }
+        return [
+          'success' => true
+        ];
+        } catch (Exception $e) {
+          return [
+            'success' => false,
+            'error' => 'Sorry, try again.'
+          ];
+        }
+    }
+    ]);
   }
 }
