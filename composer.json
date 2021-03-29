@@ -8,9 +8,10 @@
       "name": "Harness"
     }
   ],
-  "autoload": {
-    "psr-4": {
-      "Harness\\": "src/"
-    }
+  "require": {
+    "advanced-custom-fields/advanced-custom-fields-pro": "5.9.3",
+    "harness-software/wp-graphql-acf": "master",
+    "harness-software/wp-graphql-gravity-forms": "^0.2.0",
+    "wpackagist-plugin/wp-graphql": "^1.0.2"
   }
 }
