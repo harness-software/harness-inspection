@@ -1,5 +1,5 @@
 {
-  "name": "harness/harness-inspection",
+  "name": "harness-software/harness-inspection",
   "description": "Harness Inspection plugin",
   "type": "wordpress-plugin",
   "license": "GPL-2.0",
