@@ -42,7 +42,7 @@ add_action( 'plugins_loaded', function() {
       $message .= sprintf( __( 'Email Address: %s', 'Harness Software Inspection App' ), $user_email ) . "\r\n\r\n";
       $message .= __( 'If this was a mistake, ignore this email and nothing will happen.' ) . "\r\n\r\n";
       $message .= __( 'To reset your password, visit the following address:' ) . "\r\n\r\n";
-      $message .= home_url() . '/app/password-reset/' . $key ."?email=" . rawurlencode( $user_email ) . "&username=" . rawurlencode($user_login) . "\r\n\r\n";
+      $message .= getenv('CLIENT_URL') . '/app/password-reset/' . $key ."?email=" . rawurlencode( $user_email ) . "&username=" . rawurlencode($user_login) . "\r\n\r\n";
       $requester_ip = $_SERVER['REMOTE_ADDR'];
       if ( $requester_ip ) {
           $message .= sprintf(
