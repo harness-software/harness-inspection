@@ -1,12 +1,12 @@
 # harness-inspection #
-**Contributors:**      Harness Software  
-**Donate link:**       https://harnessup.com  
-**Tags:**  
-**Requires at least:** 4.4  
-**Tested up to:**      4.8.1 
-**Stable tag:**        0.1.0  
-**License:**           GPLv2  
-**License URI:**       http://www.gnu.org/licenses/gpl-2.0.html  
+**Contributors:**      Harness Software
+**Donate link:**       https://harnessup.com
+**Tags:**
+**Requires at least:** 4.4
+**Tested up to:**      4.8.1
+**Stable tag:**        0.2.0
+**License:**           GPLv2
+**License URI:**       http://www.gnu.org/licenses/gpl-2.0.html
 
 ## Description ##
 
@@ -32,7 +32,7 @@ query{
     nodes{
       harnessInspectionPoint{
          locationId
-        description  
+        description
       }
     }
   }
@@ -71,14 +71,14 @@ and the results of the query would be:
 ```graphql
 mutation {
   makeInspection(input: {
-    title: "Date + Serial Number", 
-    author_id: 1, 
-    author_email: "email@test.com", 
-    serial_number: "1234-5678-910112", 
+    title: "Date + Serial Number",
+    author_id: 1,
+    author_email: "email@test.com",
+    serial_number: "1234-5678-910112",
     inspector: "Gadget",
-    date_of_inspection: "24/03/2021", 
-    date_of_manufacture: "24/03/2006", 
-    pass_fail: false, 
+    date_of_inspection: "24/03/2021",
+    date_of_manufacture: "24/03/2006",
+    pass_fail: false,
     fail_point: "Dee Ring",
     number_of_points_before_failure: 10
   }) {
@@ -93,6 +93,7 @@ successful post creation from the mutation would return:
   "data": {
     "makeInspection": {
       "success": true,
+      "id": "some id",
       "error": null
     }
   },
@@ -103,6 +104,11 @@ successful post creation from the mutation would return:
 
 ### 0.1.0 ###
 * First release
+
+### 0.2.0 ###
+* Add share_email field
+* Add descriptions to input fields on makeInspection mutation
+* Update author_id to ID type
 
 ## Upgrade Notice ##
 
