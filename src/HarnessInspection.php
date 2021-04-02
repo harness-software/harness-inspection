@@ -68,6 +68,7 @@ class HarnessInspection
         'graphql_plural_name' => 'inspections',
         'hierarchical' => true,
         'publicly_queryable'  => true,
+        'supports' => ['title', 'editor', 'author', 'excerpt']
       )
     );
   }
@@ -147,7 +148,6 @@ class HarnessInspection
 
       $numbersArray = [
         'Number of Points before Failure',
-        'Author ID',
       ];
 
       $type = in_array($value, $numbersArray) ? 'number' : 'text';
@@ -231,37 +231,50 @@ class HarnessInspection
     register_graphql_mutation('makeInspection', [
       'inputFields' => [
         'serial_number' => [
-          'type' => ['non_null' => 'String']
+          'type' => ['non_null' => 'String'],
+          'description' => 'Serial number of the harness being inspected'
         ],
         'date_of_manufacture' => [
-          'type' => ['non_null' => 'String']
+          'type' => ['non_null' => 'String'],
+          'description' => 'Date the harness being inspected way manufactured'
         ],
         'author_id' => [
-          'type' => ['non_null' => 'ID']
+          'type' => ['non_null' => 'ID'],
+          'description' => 'Must be the user databaseId'
         ],
         'author_email' => [
-          'type' => ['non_null' => 'String']
+          'type' => ['non_null' => 'String'],
+          'description' => 'Current user email'
         ],
         'date_of_inspection' => [
-          'type' => ['non_null' => 'String']
+          'type' => ['non_null' => 'String'],
+          'description' => 'Date of harness inspection'
         ],
         'inspector' => [
-          'type' => ['non_null' => 'String']
+          'type' => ['non_null' => 'String'],
+          'description' => 'Full name for the user completing the inspection'
         ],
         'pass_fail' => [
           'type' => ['non_null' => 'Boolean']
         ],
         'title' => [
-          'type' => ['non_null' => 'String']
+          'type' => ['non_null' => 'String'],
+          'description' => 'Is a combination of the Serial Number and Date completed: #-Date'
         ],
         'fail_point' => [
-          'type' => 'String'
+          'type' => 'String',
+          'description' => 'When the harness fails inspection, supply the Label of the fail point'
         ],
         'number_of_points_before_failure' => [
           'type' => 'Number'
         ],
         'content' => [
-          'type' => 'String'
+          'type' => 'String',
+          'description' => 'Used as the email body when sending the Inspection to required stack holders'
+        ],
+        'share_email' => [
+          'type' => 'String',
+          'description' => 'Can be supplied as an extra email to share the inspection with over email. This is saved in the Inspection excerpt field of the CPT',
         ],
       ],
       'outputFields' => [
@@ -269,7 +282,8 @@ class HarnessInspection
           'type' => ['non_null' => 'Boolean'],
         ],
         'id' => [
-          'type' => 'ID'
+          'type' => 'ID',
+          'description' => 'Id of the newly created Inspection post type'
         ],
         'error' => [
           'type' => 'String'
@@ -290,6 +304,7 @@ class HarnessInspection
             'post_type'     => 'inspection',
             'post_author'   => $input['author_id'],
             'post_content'  => $input['content'],
+            'post_excerpt'  => $input['share_email'],
           );
 
           $post_id = wp_insert_post($inspect_post, $wp_error);
