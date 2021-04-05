@@ -39,8 +39,8 @@ class HarnessInspection
       'inspection-points',
       array(
         'labels'      => array(
-          'name'          => __('inspection points', 'textdomain'),
-          'singular_name' => __('inspection points', 'textdomain'),
+          'name'          => __('Inspection Points', 'textdomain'),
+          'singular_name' => __('Inspection Point', 'textdomain'),
         ),
         'public'      => true,
         'has_archive' => true,
@@ -57,8 +57,8 @@ class HarnessInspection
       'inspection',
       array(
         'labels'      => array(
-          'name'          => __('inspection', 'textdomain'),
-          'singular_name' => __('inspection', 'textdomain'),
+          'name'          => __('Inspections', 'textdomain'),
+          'singular_name' => __('Inspection', 'textdomain'),
         ),
         'public'      => true,
         'has_archive' => true,
