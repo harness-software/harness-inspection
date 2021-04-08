@@ -54,6 +54,28 @@ add_action('plugins_loaded', function () {
       }
       return $message;
     }, 10, 4);
+
+    add_filter( 'manage_inspection-points_posts_columns', 'inspections_filter_posts_columns' );
+
+    function inspections_filter_posts_columns( $columns ) {
+      $columns['location'] = __( 'Location' );
+      return $columns;
+    }
+
+    add_action( 'manage_inspection-points_posts_custom_column', 'inspections_location_column', 10, 2);
+    
+      function inspections_location_column( $column, $post_id ) {
+      // Image column
+      if ( 'location' === $column ) {
+        echo get_field( "location_id", $post_id );
+      }
+    } 
+
+    add_filter( 'manage_edit-inspection-points_sortable_columns', 'inspections_realestate_sortable_columns');
+    function inspections_realestate_sortable_columns( $columns ) {
+      $columns['location'] = 'location_id';
+      return $columns;
+    }
   }
 }, 0);
 
