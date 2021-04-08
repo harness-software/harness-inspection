@@ -238,6 +238,10 @@ class HarnessInspection
           'type' => ['non_null' => 'String'],
           'description' => 'Date the harness being inspected way manufactured'
         ],
+        'author_databaseId' => [
+          'type' => 'Int',
+          'description' => 'DatabaseId for the user is set as the Author of the Post'
+        ],
         'author_id' => [
           'type' => ['non_null' => 'ID'],
           'description' => 'Must be the user databaseId'
@@ -302,7 +306,7 @@ class HarnessInspection
             'post_title'    => $input['title'],
             'post_status'   => 'publish',
             'post_type'     => 'inspection',
-            'post_author'   => $input['author_id'],
+            'post_author'   => isset($input['author_databaseId']) ? $input['author_databaseId'] : $input['author_id'],
             'post_content'  => $input['content'],
             'post_excerpt'  => $input['share_email'],
           );
