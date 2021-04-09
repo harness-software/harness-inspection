@@ -32,6 +32,7 @@ Plugin to register an Inspection Points Custom Post Type AND an Inspection Custo
 query {
   inspectionPoints {
     nodes {
+      title
       harnessInspectionPoint {
         locationId
         description
@@ -49,18 +50,21 @@ and the results of the query would be:
     "inspectionPoints": {
       "nodes": [
         {
+          "title": "Stitching",
           "harnessInspectionPoint": {
             "locationId": 3,
             "description": "Gotta have some stitching."
           }
         },
         {
+          "title": "Grommets",
           "harnessInspectionPoint": {
             "locationId": 2,
             "description": "here is an even better description"
           }
         },
         {
+          "title": "Nylon Webbing",
           "harnessInspectionPoint": {
             "locationId": 1,
             "description": "Here is a neat description."
@@ -75,25 +79,32 @@ and the results of the query would be:
 ## Example Mutation to create an Inspection CPT
 
 ```graphql
-mutation {
-  makeInspection(
-    input: {
-      title: "Date + Serial Number"
-      author_id: 1
-      author_email: "email@test.com"
-      serial_number: "1234-5678-910112"
-      inspector: "Gadget"
-      date_of_inspection: "24/03/2021"
-      date_of_manufacture: "24/03/2006"
-      pass_fail: false
-      fail_point: "Dee Ring"
-      number_of_points_before_failure: 10
-    }
-  ) {
+mutation Make($input: MakeInspectionInput!) {
+  makeInspection(input: $input) {
     success
+    id
     error
   }
 }
+```
+
+example variables:
+
+```json
+{
+  "input": {
+     "author_email": "email@author.com",
+     "author_id": 1,
+     "content": "Email content",
+     "date_of_inspection": "today",
+     "date_of_manufacture": "yesterday",
+     "inspector": "Big Bob",
+     "title": "serial# and date2",
+     "serial_number": "#4325324523",
+     "pass_fail": true,
+     "share_email": "email@share.com"
+    }
+  }
 ```
 
 successful post creation from the mutation would return:
