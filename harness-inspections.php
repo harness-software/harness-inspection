@@ -129,7 +129,7 @@ function harness_inspections_section_text() {
 
 function harness_inspections_plugin_setting_client_url() {
   $options = get_option( 'harness_inspections_plugin_options' );
-  echo "<input id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_url( $options['client_url'] ) . "' />";
+  echo "<input id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_attr( $options['client_url'] ) . "' />";
 }
 
 function harness_inspections_plugin_setting_password_reset() {
