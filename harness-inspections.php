@@ -136,13 +136,15 @@ add_action('plugins_loaded', function () {
   function harness_inspections_plugin_setting_client_url()
   {
     $options = get_option('harness_inspections_plugin_options');
-    echo "<input style='min-width: 300px' id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_attr($options['client_url']) . "' placeholder='https://inspections.harnessup.com' /><p>Enter the origin here, do not include trailing '/'</p>";
+    $value = (!empty($options['client_url'])) ? esc_attr($options['client_url']) : '';
+    echo "<input style='min-width: 300px' id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . $value . "' placeholder='https://inspections.harnessup.com' /><p>Enter the origin here, do not include trailing '/'</p>";
   }
 
   function harness_inspections_plugin_setting_password_reset()
   {
     $options = get_option('harness_inspections_plugin_options');
-    echo "<input style='min-width: 300px' id='harness_inspections_plugin_setting_password_reset' name='harness_inspections_plugin_options[password_reset]' type='text' value='" . esc_attr($options['password_reset']) . "' placeholder='/harness-inspection/password-reset/' /><p>Enter relative path for reset here, include '/' on either side</p>";
+    $value = (!empty($options['password_reset'])) ? esc_attr($options['password_reset']) : '';
+    echo "<input style='min-width: 300px' id='harness_inspections_plugin_setting_password_reset' name='harness_inspections_plugin_options[password_reset]' type='text' value='" . $value  . "' placeholder='/harness-inspection/password-reset/' /><p>Enter relative path for reset here, include '/' on either side</p>";
   }
 
   function harness_inspections_plugin_options_validate($input)
