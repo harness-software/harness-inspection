@@ -32,10 +32,12 @@ add_action('plugins_loaded', function () {
     add_action('graphql_register_types', 'initGraphQLRegister');
     add_role('free_user', 'Free User', array('read' => true, 'level_0' => true));
 
-    add_filter('retrieve_password_message', function ($message, $key, $user_login, $user_data) { 
-      $options = get_option( 'harness_inspections_plugin_options' );
-      $client_url = (!empty($options['client_url'])) ? $options['client_url'] : getenv('CLIENT_URL');
-      $reset_path =  (!empty($options['password_reset'])) ? $options['password_reset'] : '/harness-inspection/password-reset/';
+    add_filter('retrieve_password_message', function ($message, $key, $user_login, $user_data) {
+       
+       $options = get_option( 'harness_inspections_plugin_options' );
+
+       $client_url = (!empty($options['client_url'])) ? $options['client_url'] : getenv('CLIENT_URL');
+       $reset_path =  (!empty($options['password_reset'])) ? $options['password_reset'] : '/harness-inspection/password-reset/';
 
       $user_email = $user_data->user_email;
       $site_name = 'Harness Software Inspection App';
@@ -127,12 +129,47 @@ function harness_inspections_section_text() {
 
 function harness_inspections_plugin_setting_client_url() {
   $options = get_option( 'harness_inspections_plugin_options' );
-  echo "<input id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_attr( $options['client_url'] ) . "' />";
+  echo "<input id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_url( $options['client_url'] ) . "' />";
 }
 
 function harness_inspections_plugin_setting_password_reset() {
   $options = get_option( 'harness_inspections_plugin_options' );
   echo "<input id='harness_inspections_plugin_setting_password_reset' name='harness_inspections_plugin_options[password_reset]' type='text' value='" . esc_attr( $options['password_reset'] ) . "' />";
+}
+
+function harness_inspections_plugin_options_validate($input) {
+  $default_values = array (
+    'client_url' => '',
+    'password_reset'  => '',
+  );
+
+  if ( ! is_array( $input ) ){
+    return $default_values;
+  }
+
+  $validated_output = array ();
+
+  foreach ( $default_values as $key => $value ){
+    if ( empty ( $input[ $key ] ) ){
+      $validated_output[ $key ] = $value;
+    }else{
+      
+      if('client_url' === $key){
+        //sanitize URL
+        $validated_output[$key] = filter_var( $input[$key], FILTER_VALIDATE_URL );
+      }
+
+      if('password_reset' === $key){
+        //sanitize path
+        //see: https://www.texelate.co.uk/blog/validate-a-url-path-with-php
+        if(filter_var('http://www.example.com' . $input[$key], FILTER_VALIDATE_URL )){
+          $validated_output[$key] = $input[$key];
+        }
+      }
+    }
+  }
+
+  return $validated_output;
 }
 
 }, 0);
