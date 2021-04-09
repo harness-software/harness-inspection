@@ -33,11 +33,11 @@ add_action('plugins_loaded', function () {
     add_role('free_user', 'Free User', array('read' => true, 'level_0' => true));
 
     add_filter('retrieve_password_message', function ($message, $key, $user_login, $user_data) {
-       
-       $options = get_option( 'harness_inspections_plugin_options' );
 
-       $client_url = (!empty($options['client_url'])) ? $options['client_url'] : getenv('CLIENT_URL');
-       $reset_path =  (!empty($options['password_reset'])) ? $options['password_reset'] : '/harness-inspection/password-reset/';
+      $options = get_option('harness_inspections_plugin_options');
+
+      $client_url = (!empty($options['client_url'])) ? $options['client_url'] : getenv('CLIENT_URL');
+      $reset_path =  (!empty($options['password_reset'])) ? $options['password_reset'] : '/harness-inspection/password-reset/';
 
       $user_email = $user_data->user_email;
       $site_name = 'Harness Software Inspection App';
@@ -61,117 +61,125 @@ add_action('plugins_loaded', function () {
       return $message;
     }, 10, 4);
 
-    add_filter( 'manage_inspection-points_posts_columns', 'inspections_filter_posts_columns' );
+    add_filter('manage_inspection-points_posts_columns', 'inspections_filter_posts_columns');
 
-    function inspections_filter_posts_columns( $columns ) {
-      $columns['location'] = __( 'Location' );
+    function inspections_filter_posts_columns($columns)
+    {
+      $columns['location'] = __('Location');
       return $columns;
     }
 
-    add_action( 'manage_inspection-points_posts_custom_column', 'inspections_location_column', 10, 2);
-    
-      function inspections_location_column( $column, $post_id ) {
-      // Image column
-      if ( 'location' === $column ) {
-        echo get_field( "location_id", $post_id );
-      }
-    } 
+    add_action('manage_inspection-points_posts_custom_column', 'inspections_location_column', 10, 2);
 
-    add_filter( 'manage_edit-inspection-points_sortable_columns', 'inspections_location_sortable_columns');
-    function inspections_location_sortable_columns( $columns ) {
+    function inspections_location_column($column, $post_id)
+    {
+      // Image column
+      if ('location' === $column) {
+        echo get_field("location_id", $post_id);
+      }
+    }
+
+    add_filter('manage_edit-inspection-points_sortable_columns', 'inspections_location_sortable_columns');
+    function inspections_location_sortable_columns($columns)
+    {
       $columns['location'] = 'location_id';
       return $columns;
     }
   }
 
   //SETTINGS PAGE
-  add_action( 'admin_menu', 'inspection_add_settings_page' );  
+  add_action('admin_menu', 'inspection_add_settings_page');
 
-  function inspection_add_settings_page() {
-    add_options_page( 'Harness Inspections Plugin Options', 'Harness Inspections', 'manage_options', 'harness-inspections', 'inspection_render_plugin_settings_page' );
+  function inspection_add_settings_page()
+  {
+    add_options_page('Harness Inspections Plugin Options', 'Harness Inspections', 'manage_options', 'harness-inspections', 'inspection_render_plugin_settings_page');
   }
 
-  function inspection_render_plugin_settings_page(){
-    if ( !current_user_can( 'manage_options' ) )  {
-      wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+  function inspection_render_plugin_settings_page()
+  {
+    if (!current_user_can('manage_options')) {
+      wp_die(__('You do not have sufficient permissions to access this page.'));
     }
-    ?>
-      <div class="wrap">
-        <h2>Harness Inspection Plugin Settings</h2>
-        <form action="options.php" method="post">
-          <?php 
-            settings_fields( 'harness_inspections_plugin_options' );
-            do_settings_sections( 'harness_inspections_plugin' ); 
-          ?>
-            <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e( 'Save' ); ?>" />
-          </div>
+?>
+    <div class="wrap">
+      <h2>Harness Inspection Plugin Settings</h2>
+      <form action="options.php" method="post">
+        <?php
+        settings_fields('harness_inspections_plugin_options');
+        do_settings_sections('harness_inspections_plugin');
+        ?>
+        <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e('Save'); ?>" />
+    </div>
     </form>
-      </div>
-    <?php
+    </div>
+<?php
   }
 
-  function harness_inspection_register_settings() {
-    register_setting( 'harness_inspections_plugin_options', 'harness_inspections_plugin_options', 'harness_inspections_plugin_options_validate' );
-    
-    add_settings_section( 'harness_inspections_settings', 'Harness Inspection Settings', 'harness_inspections_section_text', 'harness_inspections_plugin' );
+  function harness_inspection_register_settings()
+  {
+    register_setting('harness_inspections_plugin_options', 'harness_inspections_plugin_options', 'harness_inspections_plugin_options_validate');
 
-    add_settings_field( 'harness_inspections_plugin_setting_client_url', 'Client URL', 'harness_inspections_plugin_setting_client_url', 'harness_inspections_plugin', 'harness_inspections_settings' );
+    add_settings_section('harness_inspections_settings', 'Harness Inspection Settings', 'harness_inspections_section_text', 'harness_inspections_plugin');
 
-    add_settings_field( 'harness_inspections_plugin_setting_password_reset', 'Password Reset Path', 'harness_inspections_plugin_setting_password_reset', 'harness_inspections_plugin', 'harness_inspections_settings' );
+    add_settings_field('harness_inspections_plugin_setting_client_url', 'Client URL', 'harness_inspections_plugin_setting_client_url', 'harness_inspections_plugin', 'harness_inspections_settings');
 
-}
-
-add_action( 'admin_init', 'harness_inspection_register_settings' );
-
-function harness_inspections_section_text() {
-  echo '<p>Here you can set all the options for the Harness Inspections plugin</p>';
-}
-
-function harness_inspections_plugin_setting_client_url() {
-  $options = get_option( 'harness_inspections_plugin_options' );
-  echo "<input id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_attr( $options['client_url'] ) . "' />";
-}
-
-function harness_inspections_plugin_setting_password_reset() {
-  $options = get_option( 'harness_inspections_plugin_options' );
-  echo "<input id='harness_inspections_plugin_setting_password_reset' name='harness_inspections_plugin_options[password_reset]' type='text' value='" . esc_attr( $options['password_reset'] ) . "' />";
-}
-
-function harness_inspections_plugin_options_validate($input) {
-  $default_values = array (
-    'client_url' => '',
-    'password_reset'  => '',
-  );
-
-  if ( ! is_array( $input ) ){
-    return $default_values;
+    add_settings_field('harness_inspections_plugin_setting_password_reset', 'Password Reset Path', 'harness_inspections_plugin_setting_password_reset', 'harness_inspections_plugin', 'harness_inspections_settings');
   }
 
-  $validated_output = array ();
+  add_action('admin_init', 'harness_inspection_register_settings');
 
-  foreach ( $default_values as $key => $value ){
-    if ( empty ( $input[ $key ] ) ){
-      $validated_output[ $key ] = $value;
-    }else{
-      
-      if('client_url' === $key){
-        //sanitize URL
-        $validated_output[$key] = filter_var( $input[$key], FILTER_VALIDATE_URL );
-      }
+  function harness_inspections_section_text()
+  {
+    echo '<p>Here you can set all the options for the Harness Inspections plugin</p>';
+  }
 
-      if('password_reset' === $key){
-        //sanitize path
-        //see: https://www.texelate.co.uk/blog/validate-a-url-path-with-php
-        if(filter_var('http://www.example.com' . $input[$key], FILTER_VALIDATE_URL )){
-          $validated_output[$key] = $input[$key];
+  function harness_inspections_plugin_setting_client_url()
+  {
+    $options = get_option('harness_inspections_plugin_options');
+    echo "<input style='min-width: 300px' id='harness_inspections_plugin_setting_client_url' name='harness_inspections_plugin_options[client_url]' type='text' value='" . esc_attr($options['client_url']) . "' placeholder='https://inspections.harnessup.com' /><p>Enter the origin here, do not include trailing '/'</p>";
+  }
+
+  function harness_inspections_plugin_setting_password_reset()
+  {
+    $options = get_option('harness_inspections_plugin_options');
+    echo "<input style='min-width: 300px' id='harness_inspections_plugin_setting_password_reset' name='harness_inspections_plugin_options[password_reset]' type='text' value='" . esc_attr($options['password_reset']) . "' placeholder='/harness-inspection/password-reset/' /><p>Enter relative path for reset here, include '/' on either side</p>";
+  }
+
+  function harness_inspections_plugin_options_validate($input)
+  {
+    $default_values = array(
+      'client_url' => '',
+      'password_reset'  => '',
+    );
+
+    if (!is_array($input)) {
+      return $default_values;
+    }
+
+    $validated_output = array();
+
+    foreach ($default_values as $key => $value) {
+      if (empty($input[$key])) {
+        $validated_output[$key] = $value;
+      } else {
+
+        if ('client_url' === $key) {
+          //sanitize URL
+          $validated_output[$key] = filter_var($input[$key], FILTER_VALIDATE_URL);
+        }
+
+        if ('password_reset' === $key) {
+          //sanitize path
+          //see: https://www.texelate.co.uk/blog/validate-a-url-path-with-php
+          if (filter_var('http://www.example.com' . $input[$key], FILTER_VALIDATE_URL)) {
+            $validated_output[$key] = $input[$key];
+          }
         }
       }
     }
+
+    return $validated_output;
   }
-
-  return $validated_output;
-}
-
 }, 0);
 
 function init()
