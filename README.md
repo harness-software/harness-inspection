@@ -94,7 +94,8 @@ example variables:
 {
   "input": {
      "author_email": "email@author.com",
-     "author_id": 1,
+     "author_id": "Ch==fds3",
+     "author_databaseId": 2,
      "content": "Email content",
      "date_of_inspection": "today",
      "date_of_manufacture": "yesterday",
